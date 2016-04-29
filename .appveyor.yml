@@ -12,7 +12,7 @@ install:
 build_script:
   - appveyor AddCompilationMessage "Starting Build"
   - cd C:\projects\logstash
-  - rake test:install-core
+  - rake bootstrap
 
 test_script:
   - rake test:core   
