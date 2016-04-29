@@ -5,11 +5,8 @@ version: "{build}"
 os: Windows Server 2012 R2
 
 install:
-  - bundle install
   - set JAVA_HOME=C:\Program Files\Java\jdk1.8.0
-  - appveyor DownloadFile https://s3.amazonaws.com/jruby.org/downloads/1.7.25/jruby-bin-1.7.25.zip
-  - 7z x jruby-bin-1.7.21.zip -y > nul
-  - SET PATH=C:\projects\logstash\jruby-1.7.25\bin;%PATH%
+  - set PATH=C:\jruby-9.0.0.0\bin;%PATH%
   - gem install rake
   
 build_script:
@@ -19,4 +16,5 @@ build_script:
   - rake bootstrap
 
 test_script:
-  - rake test:core 
+  - rake test:core
+
