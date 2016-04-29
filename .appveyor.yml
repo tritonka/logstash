@@ -10,6 +10,7 @@ install:
   - appveyor DownloadFile https://s3.amazonaws.com/jruby.org/downloads/1.7.25/jruby-bin-1.7.25.zip
   - 7z x jruby-bin-1.7.21.zip -y > nul
   - SET PATH=C:\projects\logstash\jruby-1.7.25\bin;%PATH%
+  - gem install rake
   
 build_script:
   - appveyor AddCompilationMessage "Starting Build"
