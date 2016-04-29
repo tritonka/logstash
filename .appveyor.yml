@@ -8,10 +8,10 @@ install:
   - set JAVA_HOME=C:\Program Files\Java\jdk1.8.0
   - set PATH=C:\jruby-9.0.0.0\bin;%PATH%
   - gem install rake
+  - gem update --system
   
 build_script:
   - appveyor AddCompilationMessage "Starting Build"
-  - ruby -v
   - cd C:\projects\logstash
   - rake test:install-core
 
