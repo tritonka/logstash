@@ -11,7 +11,6 @@ install:
   
 build_script:
   - appveyor AddCompilationMessage "Starting Build"
-  - cd C:\projects\logstash
   - rake bootstrap
 
 test_script:
