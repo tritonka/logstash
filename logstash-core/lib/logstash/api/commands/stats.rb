@@ -18,6 +18,10 @@ module LogStash
           service.get_shallow(:stats, :events)
         end
 
+        def pipeline
+          service.get_shallow(:stats, :pipelines)
+        end
+
         def memory
           memory = LogStash::Json.load(service.get(:jvm_memory_stats))
           {

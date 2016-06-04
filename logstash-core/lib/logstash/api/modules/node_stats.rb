@@ -40,6 +40,10 @@ module LogStash
           respond_with :process => process_payload
         end
 
+        get "/pipelines" do
+          respond_with :pipelines => pipeline_payload
+        end
+
         private
 
         def events_payload
@@ -52,6 +56,10 @@ module LogStash
 
         def process_payload
           @stats.process
+        end
+
+        def pipeline_payload
+          @stats.pipeline
         end
       end
     end

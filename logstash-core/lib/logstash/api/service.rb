@@ -47,11 +47,16 @@ module LogStash
 
       def get(key)
         metric_store = @snapshot_rotation_mutex.synchronize { @snapshot.metric_store }
-        if key == :jvm_memory_stats
-          data = metric_store.get_shallow(:jvm, :memory)
-        else
-          data = metric_store.get_with_path("stats/events")
-        end
+        data = case key
+                 when :jvm_memory_stats
+                   metric_store.get_shallow(:jvm, :memory)
+                 when :events_stats
+                   metric_store.get_with_path("stats/events")
+                 when :pipelines_stats
+                   metric_store.get_with_path("stats/pipelines")
+                 else
+                   raise ArgumentError, "Unknown service key #{key}"
+                end
         LogStash::Json.dump(data)
       end
 
