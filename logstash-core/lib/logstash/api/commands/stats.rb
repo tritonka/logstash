@@ -5,7 +5,6 @@ module LogStash
   module Api
     module Commands
       class Stats < Commands::Base
-
         def jvm
           {:threads => service.get_shallow(:jvm, :threads)}
         end
@@ -19,7 +18,8 @@ module LogStash
         end
 
         def pipeline
-          service.get_shallow(:stats, :pipelines)
+          stats = service.get_shallow(:stats, :pipelines)
+          PluginsStats.report(stats)
         end
 
         def memory
@@ -101,8 +101,35 @@ module LogStash
           def cpu_time(hash)
             hash["cpu.time"] / 1000000.0
           end
+        end # class HotThreadsReport
 
-        end       
+        module PluginsStats
+          module_function
+
+          def plugin_stats(stats, plugin_type)
+            # Turn the `plugins` stats hash into an array of [ {}, {}, ... ]
+            # This is to produce an array of data points, one point for each
+            # plugin instance.
+            return [] unless stats[:plugins].include?(plugin_type)
+            stats[:plugins][plugin_type].collect do |id, data|
+              { :id => id }.merge(data)
+            end
+          end
+
+          def report(stats)
+            # Only one pipeline right now.
+            stats = stats[:main]
+
+            {
+              :events => stats[:events],
+              :pipeline => {
+                :inputs => plugin_stats(stats, :inputs),
+                :filters => plugin_stats(stats, :filters),
+                :outputs => plugin_stats(stats, :outputs)
+              }
+            }
+          end
+        end # module PluginsStats
       end
     end
   end
