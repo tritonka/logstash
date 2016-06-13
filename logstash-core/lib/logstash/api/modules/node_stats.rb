@@ -40,8 +40,8 @@ module LogStash
           respond_with :process => process_payload
         end
 
-        get "/pipelines" do
-          respond_with :pipelines => pipeline_payload
+        get "/pipeline" do
+          respond_with :pipeline => pipeline_payload
         end
 
         private
