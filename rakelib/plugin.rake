@@ -81,7 +81,7 @@ namespace "plugin" do
     task.reenable # Allow this task to be run again
   end
 
-  task "build-local-core-gem", [:name, :path]  do |task, args|
+  task "build-local-core-gem", [:name, :path] => ["build/gems"]  do |task, args|
     name = args[:name]
     path = args[:path]
 
@@ -94,7 +94,7 @@ namespace "plugin" do
       spec = Gem::Specification.load("#{name}.gemspec")
       gem_path = Gem::Package.build(spec)
     end
-    FileUtils.cp(File.join(path, gem_path), "build/")
+    FileUtils.cp(File.join(path, gem_path), "build/gems/")
 
     task.reenable # Allow this task to be run again
   end

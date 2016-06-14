@@ -2,6 +2,8 @@ require "logstash/version"
 
 namespace "artifact" do
 
+  PACKAGE_SUFFIX = ENV["RELEASE"] == "1" ? "" : "-SNAPSHOT"
+
   def package_files
     [
       "LICENSE",
@@ -62,20 +64,23 @@ namespace "artifact" do
     end.flatten.uniq
   end
 
-  task "all" => ["prepare"] do
-    PACKAGE_SUFFIX = ENV["RELEASE"] ? `git rev-parse --short HEAD` : "-SNAPSHOT"
+  task "build" do
+    Rake::Task["artifact:gems"].invoke if ENV["RELEASE"] == "1"
     Rake::Task["artifact:deb"].invoke
     Rake::Task["artifact:rpm"].invoke
     Rake::Task["artifact:zip"].invoke
     Rake::Task["artifact:tar"].invoke
   end
 
-  task "all-all-plugins" => ["prepare-all"] do
-    Rake::Task["artifact:deb"].invoke
-    Rake::Task["artifact:rpm"].invoke
-    Rake::Task["artifact:zip"].invoke
-    Rake::Task["artifact:tar"].invoke
+  task "gems" do
+    Rake::Task["artifact:build-logstash-core"].invoke
+    Rake::Task["artifact:build-logstash-core-event"].invoke
+    Rake::Task["artifact:build-logstash-core-plugin-api"].invoke
   end
+
+  task "all" => ["prepare", "build"]
+
+  task "all-all-plugins" => ["prepare-all", "build"]
 
   # We create an empty bundle config file
   # This will allow the deb and rpm to create a file
@@ -142,8 +147,6 @@ namespace "artifact" do
       exit
     end
   end
-
-  task "all" => ["build-logstash-core", "build-logstash-core-event", "build-logstash-core-plugin-api", "tar", "deb", "rpm"]
 
   task "prepare" do
     if ENV['SKIP_PREPARE'] != "1"
