@@ -93,7 +93,7 @@ namespace :version do
   end
 
   desc "set version of logstash, logstash-core, logstash-core-event, logstash-core-event-java"
-  task :set, :new_version do |t, args|
+  task :set, [:version] => [:validate] do |t, args|
     hash = {}
     get_versions.each do |component, metadata|
       # we just assume that, usually, all components except
@@ -102,7 +102,7 @@ namespace :version do
       if component == "logstash-core-plugin-api"
         hash[component] = metadata["yaml_version"]
       else
-        hash[component] = args[:new_version]
+        hash[component] = args[:version]
       end
     end
     IO.write("versions.yml", hash.to_yaml)
@@ -110,11 +110,11 @@ namespace :version do
   end
 
   desc "set version of logstash package"
-  task :set_package, :new_version do |t, args|
+  task :set_package, [:version] => [:validate] do |t, args|
     hash = {}
     get_versions.each do |component, metadata|
       if component == "logstash"
-        hash[component] = args[:new_version]
+        hash[component] = args[:version]
       else
         hash[component] = metadata["yaml_version"]
       end
@@ -124,11 +124,17 @@ namespace :version do
   end
 
   desc "set version of logstash-core-plugin-api"
-  task :set_plugin_api, :new_version do |t, args|
+  task :validate, :version do |t, args|
+    unless Regexp.new('^\d+\.\d+\.\d+(?:-\w+\d+)?$').match(args[:version])
+      abort("Invalid version argument: \"#{args[:version]}\". Aborting...")
+    end
+  end
+
+  task :set_plugin_api, [:version] => [:validate] do |t, args|
     hash = {}
     get_versions.each do |component, metadata|
       if component == "logstash-core-plugin-api"
-        hash[component] = args[:new_version]
+        hash[component] = args[:version]
       else
         hash[component] = metadata["yaml_version"]
       end
